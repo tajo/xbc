@@ -415,7 +415,11 @@ cross block chaining; XBC; IND-CPA; IND-CCA; security analysis
 \section{Introduction}
 % no \IEEEPARstart
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam laoreet turpis ac mauris fringilla, molestie sagittis risus tincidunt. Fusce ullamcorper, metus cursus dictum tempus, lorem odio sagittis lectus, sit amet lobortis leo magna quis odio. Quisque malesuada purus vitae risus accumsan, vel pharetra ligula sollicitudin. Integer felis purus, dapibus in condimentum vel, molestie ultricies dui. Vestibulum quis augue sem. Vivamus ultricies dui est, ac aliquet eros efficitur ut. Pellentesque vel tempor eros. Sed suscipit volutpat enim et semper. In rhoncus hendrerit aliquet. Aliquam condimentum posuere mi, varius porttitor mi suscipit eget. Duis aliquet massa lectus, in facilisis tortor pulvinar quis. Suspendisse cursus lectus dui, ac posuere lorem tempor quis. Vivamus imperdiet bibendum magna. Curabitur in magna vitae ipsum finibus lobortis consectetur non tortor.
+Since a block cipher by itself is suitable only for encryption or decryption of one length-fixed block of bits, there is a need to introduce an algorithm, a mode of operation, that uses the block cipher as a underlying building block and enables us to encrypt or decrypt a message of variable length. There are many modes in a widespread use: Electronic Codebook (EBC), Cipher Block Chaining (CBC), Cipher Feedback (CFB), Output Feedback (OFB) or Counter (CTR).
+
+In May 2014, Andre Watson submitted a proposal for a new block cipher mode of operation called Cross Block Chaining (XBC). This proposal was published by National Institute of Standards and Technology (NIST) under the proposed modes section. However, no formal proof considering security has been made.
+
+Section II talks about the fundamentals and design of the XBC mode and its two main variants. Section III describes security analysis and provides various attacks that can be used against the XBC scheme. Section IV shows an intuition for the proof of IND-CPA security of XBC mode. The last part is conclusion.
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.

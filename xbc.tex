@@ -65,6 +65,9 @@
 % draft mode.
 %
 \documentclass[conference]{IEEEtran}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{listings}
 % Add the compsoc option for Computer Society conferences.
 %
 % If IEEEtran.cls has not been installed into the LaTeX system files,
@@ -348,7 +351,7 @@ Georgia Institute of Technology\\
 Atlanta, Georgia 30332--0250\\
 Email: miksu@gatech.edu}
 \and
-\IEEEauthorblockN{Gustav Davidsson}
+\IEEEauthorblockN{Nils Gustav Davidsson}
 \IEEEauthorblockA{College of Computing\\
 Georgia Institute of Technology\\
 Atlanta, Georgia 30332--0250\\
@@ -525,15 +528,117 @@ Curabitur sagittis mi eros. Aliquam tempus rutrum erat. Ut sit amet placerat jus
 
 \section{Security analysis of different modes}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam laoreet turpis ac mauris fringilla, molestie sagittis risus tincidunt. Fusce ullamcorper, metus cursus dictum tempus, lorem odio sagittis lectus, sit amet lobortis leo magna quis odio. Quisque malesuada purus vitae risus accumsan, vel pharetra ligula sollicitudin. Integer felis purus, dapibus in condimentum vel, molestie ultricies dui. Vestibulum quis augue sem. Vivamus ultricies dui est, ac aliquet eros efficitur ut. Pellentesque vel tempor eros. Sed suscipit volutpat enim et semper. In rhoncus hendrerit aliquet. Aliquam condimentum posuere mi, varius porttitor mi suscipit eget. Duis aliquet massa lectus, in facilisis tortor pulvinar quis. Suspendisse cursus lectus dui, ac posuere lorem tempor quis. Vivamus imperdiet bibendum magna. Curabitur in magna vitae ipsum finibus lobortis consectetur non tortor.
+\subsection{IND-CCA security of both XBC modes}
+One can break IND-CCA of both XBC-1 and XBC-2 with the same simple algorithm that works against schemes such as CBC\$. It is as follows:
 
-Curabitur sagittis mi eros. Aliquam tempus rutrum erat. Ut sit amet placerat justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum hendrerit ullamcorper orci, ut tincidunt justo sagittis sed. Pellentesque tempus sapien dui, sit amet lobortis risus cursus eget. Duis vestibulum mi nec magna ultrices, vitae viverra mauris vehicula. Nulla tempus eleifend sollicitudin. Cras sollicitudin libero condimentum, mattis turpis non, consequat lorem. Aliquam vitae est sed justo porttitor interdum. Phasellus faucibus, leo sit amet imperdiet tempor, ante tortor hendrerit mauris, a convallis nisl tellus quis turpis. Etiam eget pulvinar eros, nec maximus orci. Nunc placerat felis et quam laoreet venenatis. Donec ut tortor augue. Duis vitae bibendum ante, a egestas nunc.
+For distinct n-bit strings $M_0$, $M_1$:
+
+\begin{gather*}
+  C \leftarrow LR_k (M_0, M_1) \\
+  M \leftarrow D_k (C || 0^n) \\
+\end{gather*}
+
+The first block of M will be exactly what was encrypted by the encryption oracle, so we can simply compare that block with $M_0$ and $M_1$ and know which experiment we are in. The above attack will work every time.
+
+\begin{gather*}
+  Adv_{XBC-1}^{IND-CCA}(A) = 1 \\
+  q_e=q_d=1,\ \mu_e = \mu_d = 2^n \\
+  t:\ compare,\ concat\ two\ n-bit\ strings \\
+\end{gather*}
+
+This attack can be easily prevented by using this scheme and some good MAC scheme in MAC-then-encrypt.
+
+TODO maybe show that it will be IND-CCA in MAC-then-encrypt w/ some good MAC
+
+\subsection{INC-CPA security of XBC-1}
+
+The author claims IND-CPA security of the scheme, and also mentions that for encryption of 1-2 blocks, XBC-1 can be used to create a two-man rule. He discusses a few situations where different parts of the secret key (which consists of the cipher key k, IV1, and IV2) are compromised by an adversary. Let us walk through these and other cases. \\
+
+\subsubsection{Both IVs Compromised} \
+
+If an adversary acquires both the IV vectors, but not the cipher key $k$, we the plaintext can still not be recovered since the blockcipher chosen will be a PRF, thus producing seemingly random output. However, the scheme is not IND-CPA secure under these circumstances, since we can let the messages be such that we can distinguish equality of the first blocks.
+
+Let $i$ be the current index in the IV vectors. We can then look up the next IV1, IV2 in the vectors, and do the following attack:
+\begin{gather*}
+  C_0 \leftarrow LR_k(IV1_i, IV1_i) \\
+  \Rightarrow C_0=E_k(IV1_i \oplus IV1_i) \oplus IV2_i \\
+  = E_k(0^n) \oplus IV2_i \\
+  C_1 \leftarrow LR_k(IV1_{i+1}, \overline{IV1_{i+1}}) \\ \\
+  Let\ E_0=C_0 \oplus IV2_i=E_k(0^n) \\
+  and\ E_1=C_1 \oplus IV2_{i+1}=E_k(0^n or 1^n) \\
+  If\ E_0==E_1\ then\ return\ 0\ else\ 1
+\end{gather*}
+Note that the IVs should change each time, so by IV1 we mean whatever is in next in the vector, which is different when obtaining $C_1$ from when we obtained $C_0$. As such, the only information we can infer abuot the plaintexts from this lack of IND-CPA security is whether or not the plaintexts have the same relation to their respective IV1, i.e. whether
+\begin{gather*}
+  M_0 \oplus IV1_i == M_1 \oplus IV1_{i+1}
+\end{gather*}
+
+\subsubsection{Cipher key and one IV compromised} \
+
+The paper discusses what happens if an adversary recovers one of the IVs and the cipher key $k$. This is interesting because in the situation of a two-man rule, we want it to be impossible for one of them to act without the other. The author states that if an adversary has IV1 and $k$, he cannot recover the plaintext, but an adversary given IV2 and $k$ can decrypt all but the first block. Consider the facts below which hold when one is given IV2 and $k$ for some ciphertext $C$ encrypted with XBC-1:
+
+\begin{gather*}
+  C[0] = E_k(M[0] \oplus IV1) \oplus IV2 \\
+  C[1] = E_k(M[1] \oplus C[0]) \oplus (M[0] \oplus IV1) \\
+  Can\ find\ X=M[0] \oplus IV1 = E_k^{-1}(C[0] \oplus IV2) \\
+  \Rightarrow Know\ M[1] = E_k^{-1}(C[1] \oplus X)
+\end{gather*}
+In this situation, we know not only $M[1]$ but all that will be propagated to the next block, so we can decrypt that as well. In fact, we can decrypt all blocks but the first, since that block is essentially the One Time Pad given we don't know IV1.
+
+However, in the case that we only know IV1 and $k$, the output from this algorithm will appear random since
+\begin{itemize}
+ \item The output of the first block is XOR:ed with IV2, which we do not know
+ \item The second block will seem random to us, since $IV1 \oplus M[0]$, which is unknown, will propagate as IV2 for the second block.
+ \item This pattern continues for all blocks, i.e. there will always be information unknown to us that propagates as an IV
+\end{itemize}
+Therefore, only one of the parties in the two-man rule has the power to decrypt all but the first blocks. The author states that one should therefore not encrypt more than 1-2 blocks when using a two-man rule, but we suggest only to encrypt one block in this case. Encrypting two blocks would mean that one member can recover half of every plaintext on his own!
+
+\subsubsection{One IV compromised} \
+
+Since we do not know the other IV, the ciphertext will appear random to us just like output from the One Time Pad. Thus no information is leaked as long as we do not know the cipher key $k$. The scheme remains secure and the plaintexts uncompromised by any attacker with reasonable resources.
+
+\subsubsection{Cipher key $k$ compromised} \
+
+Since we do not know any of the IVs in this case, we have no clue what the input to nor output from the blockcipher was in the first block. Since unknown information propagates as IV2 to the following block, and unknown information will continue to propagate, the scheme remains secure.
+
+\subsection{INC-CPA security of XBC-2}
+
+Let us consider the security of XBC-2, which is claimed to fulfill IND-CPA.
+
+% BLALBA. and also mentions that for encryption of 1-2 blocks, XBC-1 can be used to create a two-man rule. He discusses a few situations where different parts of the secret key (which consists of the cipher key k, IV1, and IV2) are compromised by an adversary. Let us walk through these and other cases.
+
+\subsubsection{Both IVs Compromised} \
+
+TODO
+
+\subsubsection{Cipher key and one IV compromised} \
+
+TODO
+
+\subsubsection{One IV compromised} \
+
+TODO
+
+\subsubsection{Cipher key $k$ compromised} \
+
+TODO.
 
 \section{Intuition for the proof of ind-cpa security of cross block chaining}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam laoreet turpis ac mauris fringilla, molestie sagittis risus tincidunt. Fusce ullamcorper, metus cursus dictum tempus, lorem odio sagittis lectus, sit amet lobortis leo magna quis odio. Quisque malesuada purus vitae risus accumsan, vel pharetra ligula sollicitudin. Integer felis purus, dapibus in condimentum vel, molestie ultricies dui. Vestibulum quis augue sem. Vivamus ultricies dui est, ac aliquet eros efficitur ut. Pellentesque vel tempor eros. Sed suscipit volutpat enim et semper. In rhoncus hendrerit aliquet. Aliquam condimentum posuere mi, varius porttitor mi suscipit eget. Duis aliquet massa lectus, in facilisis tortor pulvinar quis. Suspendisse cursus lectus dui, ac posuere lorem tempor quis. Vivamus imperdiet bibendum magna. Curabitur in magna vitae ipsum finibus lobortis consectetur non tortor.
 
 Curabitur sagittis mi eros. Aliquam tempus rutrum erat. Ut sit amet placerat justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum hendrerit ullamcorper orci, ut tincidunt justo sagittis sed. Pellentesque tempus sapien dui, sit amet lobortis risus cursus eget. Duis vestibulum mi nec magna ultrices, vitae viverra mauris vehicula. Nulla tempus eleifend sollicitudin. Cras sollicitudin libero condimentum, mattis turpis non, consequat lorem. Aliquam vitae est sed justo porttitor interdum. Phasellus faucibus, leo sit amet imperdiet tempor, ante tortor hendrerit mauris, a convallis nisl tellus quis turpis. Etiam eget pulvinar eros, nec maximus orci. Nunc placerat felis et quam laoreet venenatis. Donec ut tortor augue. Duis vitae bibendum ante, a egestas nunc.
+
+\section{Implementation guidelines}
+
+TODO: Let’s write about how the scheme should be used practically!
+\begin{itemize}
+  \item How should we use IV vectors?
+  \item Do we need to change both every time?
+  \item Can we use the same k all the time?
+  \item Can we use public-key crypto to distribute the IV vectors and then switch to symmetric-key crypto?!!!!!
+\end{itemize}
+We can motivate these things with references to the security analysis!
 
 % conference papers do not normally have an appendix
 

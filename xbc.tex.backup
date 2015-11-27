@@ -511,21 +511,21 @@ Section II talks about the fundamentals and design of the XBC mode and its two m
 
 \section{Suggested Algorithms}
 
-XBC can be seen as a variant of CBC\$ where instead of one IV, we make use of two IVs with the aim to provide improved security. This is because the existence of one more IV adds a layer of security and also since there are cross links in between, to decrypt any message, the messages preceding it must be known owing to the construction of the mode. 
+XBC can be seen as a variant of CBC\$ where instead of one IV, we make use of two IVs with the aim to provide improved security. This is beacuse the existence of one more IV adds a layer of security and also since there are cross links in between, to decrypt any message, the messages preceding it must be known owing to the construction of the mode. 
 
 \subsection{Algorithm XBC-1}
-
-The construction of this mode can be easily interpreted from the figure. In addition to the IV which we have for CBC\$ we have one more IV which creates a cross linking for the scheme. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the XOR of IV2 and the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round. 
 
 \begin{itemize}
 \color{red}
 \item Figure to be added
-\item Algorithm to be added
+\item Algortihm to be added
 \end{itemize}
+
+The construction of this mode can be easily interpretted from the figure. In addition to the IV which we have for CBC\$ we have one more IV which createsa cross linking for the scheme. The initial IV1 and IV2 are provided in the first round.The IV1 for each subsequent round of block cipher is obtained from the XOR of the plaintext of that round with the XOR of IV2 and the output of block cipher of the previous round. Similarly. the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round. 
 
 \subsection{Algorithm XBC-2}
 
-The construction of this mode is a slight variant of XBC-1. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round similar to XBC-1.
+
 
 \begin{itemize}
 \color{red}

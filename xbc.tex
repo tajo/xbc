@@ -646,11 +646,13 @@ This would indicate that when an adversary is given the IV1 vector and $k$, secu
 
 \subsubsection{One IV compromised} \
 
-TODO
+Given IV1, we can't tell anything from the ciphertext since the blockcipher is a PRF. Even in the IND-CPA game, where we decide (and thus know) the plaintexts, we can't tell anything since we can't decrypt with respect to the blockcipher, nor can we tell anything about the equality of messages assumed that IV2 changes between encryptions. However, if IV2 is fixed, i.e. reused every time, we can send messages in IND-CPA such that we can tell if the input to the blockcipher was equal, and thus break IND-CPA. But the scheme is IND-CPA in this case if IV2 changes, as it should. \
+
+If we are given IV2, we can tell what the output from the block cipher was. That doesn't help us to decrypt the plaintext, and since we don't know $k$ we only know one of the two values propagating as IV for the following block. If IV1 is fixed, though, there is no randomness except IV2 which we know, and we can tell if two messages are equal since the output from the block cipher would then be equal too.
 
 \subsubsection{Cipher key $k$ compromised} \
 
-TODO.
+Without any knowledge of the IVs, we are helpless since we are essentially given the One Time Pad for each block of the output, which is Shannon secure. It would take for both IVs to be fixed for us to be able to tell anything, namely message equality. This is no surprise, since this and other previously mentioned cases where all IVs are either known or fixed have no unknown randomness in them.
 
 \section{Intuition for the proof of ind-cpa security of cross block chaining}
 

@@ -555,7 +555,9 @@ The first block of M will be exactly what was encrypted by the encryption oracle
 
 This attack can be easily prevented by using this scheme and some good MAC scheme in MAC-then-encrypt.
 
+{\color{red}
 TODO maybe show that it will be IND-CCA in MAC-then-encrypt w/ some good, or perhaps do this under Implementation Guidelines.
+}
 
 \subsection{INC-CPA security of XBC-1}
 
@@ -656,9 +658,13 @@ Without any knowledge of the IVs, we are helpless since we are essentially given
 
 \subsection{Conclusions of security in special cases}
 
+{\color{red}
 TODO put a nice table here of the schemes and Y/N of whether they are IND-CPA or not... maybe also mention if they are generally weak (see last sentence of III.C.2.). \
+}
 
+{\color{red}
 TODO write general takeaways... number 1 is that if you reuse IVs, you risk ruining the randomness and making the scheme deterministic, thus leaking message equality and ruining IND-CPA. The difference is especially large when an adversary acquires some inside information such as an IV or $k$. (Makes sense?)\
+}
 
 \section{Intuition for the proof of ind-cpa security of cross block chaining}
 
@@ -668,6 +674,7 @@ Curabitur sagittis mi eros. Aliquam tempus rutrum erat. Ut sit amet placerat jus
 
 \section{Implementation guidelines}
 
+{\color{red}
 TODO: Let’s write about how the scheme should be used practically!
 \begin{itemize}
   \item How should we use IV vectors?
@@ -676,6 +683,7 @@ TODO: Let’s write about how the scheme should be used practically!
   \item Can we use public-key crypto to distribute the IV vectors and then switch to symmetric-key crypto?!!!!!
 \end{itemize}
 We can motivate these things with references to the security analysis!
+}
 
 % conference papers do not normally have an appendix
 

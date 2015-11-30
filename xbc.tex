@@ -654,6 +654,12 @@ If we are given IV2, we can tell what the output from the block cipher was. That
 
 Without any knowledge of the IVs, we are helpless since we are essentially given the One Time Pad for each block of the output, which is Shannon secure. It would take for both IVs to be fixed for us to be able to tell anything, namely message equality. This is no surprise, since this and other previously mentioned cases where all IVs are either known or fixed have no unknown randomness in them.
 
+\subsection{Conclusions of security in special cases}
+
+TODO put a nice table here of the schemes and Y/N of whether they are IND-CPA or not... maybe also mention if they are generally weak (see last sentence of III.C.2.). \
+
+TODO write general takeaways... number 1 is that if you reuse IVs, you risk ruining the randomness and making the scheme deterministic, thus leaking message equality and ruining IND-CPA. The difference is especially large when an adversary acquires some inside information such as an IV or $k$. (Makes sense?)\
+
 \section{Intuition for the proof of ind-cpa security of cross block chaining}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam laoreet turpis ac mauris fringilla, molestie sagittis risus tincidunt. Fusce ullamcorper, metus cursus dictum tempus, lorem odio sagittis lectus, sit amet lobortis leo magna quis odio. Quisque malesuada purus vitae risus accumsan, vel pharetra ligula sollicitudin. Integer felis purus, dapibus in condimentum vel, molestie ultricies dui. Vestibulum quis augue sem. Vivamus ultricies dui est, ac aliquet eros efficitur ut. Pellentesque vel tempor eros. Sed suscipit volutpat enim et semper. In rhoncus hendrerit aliquet. Aliquam condimentum posuere mi, varius porttitor mi suscipit eget. Duis aliquet massa lectus, in facilisis tortor pulvinar quis. Suspendisse cursus lectus dui, ac posuere lorem tempor quis. Vivamus imperdiet bibendum magna. Curabitur in magna vitae ipsum finibus lobortis consectetur non tortor.

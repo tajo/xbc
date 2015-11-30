@@ -555,7 +555,7 @@ The first block of M will be exactly what was encrypted by the encryption oracle
 
 This attack can be easily prevented by using this scheme and some good MAC scheme in MAC-then-encrypt.
 
-TODO maybe show that it will be IND-CCA in MAC-then-encrypt w/ some good MAC
+TODO maybe show that it will be IND-CCA in MAC-then-encrypt w/ some good, or perhaps do this under Implementation Guidelines.
 
 \subsection{INC-CPA security of XBC-1}
 
@@ -563,7 +563,7 @@ The author claims IND-CPA security of the scheme, and also mentions that for enc
 
 \subsubsection{Both IVs Compromised} \
 
-If an adversary acquires both the IV vectors, but not the cipher key $k$, we the plaintext can still not be recovered since the blockcipher chosen will be a PRF, thus producing seemingly random output. However, the scheme is not IND-CPA secure under these circumstances, since we can let the messages be such that we can distinguish equality of the first blocks.
+If an adversary acquires both the IV vectors, but not the cipher key $k$, we claim that the plaintext can still not be recovered since the blockcipher chosen will be a PRF, thus producing seemingly random output. However, the scheme is not IND-CPA secure under these circumstances, since we can let the messages be such that we can distinguish equality of the first blocks.
 
 Let $i$ be the current index in the IV vectors. We can then look up the next IV1, IV2 in the vectors, and do the following attack:
 \begin{gather*}
@@ -575,7 +575,7 @@ Let $i$ be the current index in the IV vectors. We can then look up the next IV1
   and\ E_1=C_1 \oplus IV2_{i+1}=E_k(0^n or 1^n) \\
   If\ E_0==E_1\ then\ return\ 0\ else\ 1
 \end{gather*}
-Note that the IVs should change each time, so by IV1 we mean whatever is in next in the vector, which is different when obtaining $C_1$ from when we obtained $C_0$. As such, the only information we can infer abuot the plaintexts from this lack of IND-CPA security is whether or not the plaintexts have the same relation to their respective IV1, i.e. whether
+Note that the IVs should change each time, so by IV1 we mean whatever is in next in the vector, which is different when obtaining $C_1$ from when we obtained $C_0$. As such, the only information we can infer about the plaintexts from this lack of IND-CPA security is whether or not the plaintexts have the same relation to their respective IV1, i.e. whether
 \begin{gather*}
   M_0 \oplus IV1_i == M_1 \oplus IV1_{i+1}
 \end{gather*}
@@ -616,11 +616,33 @@ Let us consider the security of XBC-2, which is claimed to fulfill IND-CPA.
 
 \subsubsection{Both IVs Compromised} \
 
-TODO
+Given both IV vectors but without the cipher key $k$, we again claim that an adversary cannot recover the plaintext, just like with XBC-1 [III.B.1.]. Since the blockcipher is assumed to be a PRF, whatever comes out of it doesn't help us to decrypt the message. However, just as with XBC-1, we can tell if messages have the same relation with their respective IV1 in the sense that
+\begin{gather*}
+  M_i[0] \oplus IV1_i == M_{i+1}[0] \oplus IV1_{i+1}
+\end{gather*}
+
+We can exploit the above fact, and break IND-CPA security with the exact same adversary we used in III.B.1, since the output from the first block is the same for XBC-1 and XBC-2. Just as noted there, the only information this exploit gets us is whether or not the plaintexts have the same relation to their respective IV1, as explained in the previous paragraph. With good, unpredictable choices of the IVs, this will rarely be an issue, but it is a potential problem that can occur and thus leak information to an attacker.
 
 \subsubsection{Cipher key and one IV compromised} \
 
-TODO
+A two-man rule is an interesting application of this scheme, and one would want to know the security implications if one party would be an adversary; what can he do without the other? \
+
+Anyone with $k$ and IV2 can find both the input and output of the first blockcipher. We can't find $M[0]$ since it is XOR:ed with IV1 which we don't know, but we still know all that will be propagated to the next block, and thus we can decrypt all but the first block, just as for XBC-1 (in III.B.2.). \
+
+Given IV1 and k, we can't decrypt since IV2 is blocking us both from decrypting the first block and finding out what was propagated to the next block. This is the case because we don't know what IV2 is, nor what it was XOR:ed with, so the output is just a random bitstring for us. In other words, it's impossible to decrypt the first block alone, and it should be hard to discover what the plaintexts was for the scheme as a whole. \
+
+However, the IND-CPA game is very easy to win: if we are the one providing the plaintext, i.e. we know the plaintext, IV1 and $k$, then we can decrypt all blocks but the first since IV2 is not propagated at all! An efficient example attack breaking IND-CPA is as below:
+\begin{gather*}
+  C \leftarrow LR_k(0^{2n},0^n || 1^n) \\
+  Can't\ decrypt\ 1st\ block,\ however: \\
+  C[1] = E_k(M[1] \oplus E_k(M[0] \oplus IV1) \oplus M[0] \oplus IV1) \\
+  \Rightarrow E_k^{-1}(C[1] \oplus M[0] \oplus IV1) \\
+  \oplus E_k(M[0] \oplus IV1) = M[1] \\
+  Use\ M[1]\ from\ above,\ and\ run: \\
+  If\ M[1]==0^n\ return\ 0\ otherwise\ 1
+\end{gather*}
+
+This would indicate that when an adversary is given the IV1 vector and $k$, security is weak if the plaintexts are predictable. If we have a limited number of guesses for the values of the first two blocks, we can verify whether or not $C[1]$ is possible with these values given what we know about $k$ and IV1. This means that an attacker given $k$, the IV1 vector and a ciphertext can have some sense of how likely it is that the ciphertext is the encryption some probable plaintext as compared to some other probable plaintext, which is very serious.
 
 \subsubsection{One IV compromised} \
 

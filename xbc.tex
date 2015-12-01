@@ -561,7 +561,7 @@ TODO maybe show that it will be IND-CCA in MAC-then-encrypt w/ some good, or per
 
 \subsection{INC-CPA security of XBC-1}
 
-The author claims IND-CPA security of the scheme, and also mentions that for encryption of 1-2 blocks, XBC-1 can be used to create a two-man rule. He discusses a few situations where different parts of the secret key (which consists of the cipher key k, IV1, and IV2) are compromised by an adversary. Let us walk through these and other cases. \\
+While the author doesn't state what the security of the scheme is  - we assume IND-CPA security - he mentions that for encryption of 1-2 blocks, XBC-1 can be used to create a two-man rule. He discusses a few situations where different parts of the secret key (which consists of the cipher key $k$, IV1, and IV2) are compromised by an adversary. Let us walk through these and other cases. \\
 
 \subsubsection{Both IVs Compromised} \
 
@@ -574,12 +574,12 @@ Let $i$ be the current index in the IV vectors. We can then look up the next IV1
   = E_k(0^n) \oplus IV2_i \\
   C_1 \leftarrow LR_k(IV1_{i+1}, \overline{IV1_{i+1}}) \\ \\
   Let\ E_0=C_0 \oplus IV2_i=E_k(0^n) \\
-  and\ E_1=C_1 \oplus IV2_{i+1}=E_k(0^n or 1^n) \\
+  and\ E_1=C_1 \oplus IV2_{i+1}=E_k(0^n\ or\ 1^n) \\
   If\ E_0==E_1\ then\ return\ 0\ else\ 1
 \end{gather*}
 Note that the IVs should change each time, so by IV1 we mean whatever is in next in the vector, which is different when obtaining $C_1$ from when we obtained $C_0$. As such, the only information we can infer about the plaintexts from this lack of IND-CPA security is whether or not the plaintexts have the same relation to their respective IV1, i.e. whether
 \begin{gather*}
-  M_0 \oplus IV1_i == M_1 \oplus IV1_{i+1}
+  M_i[0] \oplus IV1_i == M_{i+1}[0] \oplus IV1_{i+1}
 \end{gather*}
 
 \subsubsection{Cipher key and one IV compromised} \
@@ -589,8 +589,8 @@ The paper discusses what happens if an adversary recovers one of the IVs and the
 \begin{gather*}
   C[0] = E_k(M[0] \oplus IV1) \oplus IV2 \\
   C[1] = E_k(M[1] \oplus C[0]) \oplus (M[0] \oplus IV1) \\
-  Can\ find\ X=M[0] \oplus IV1 = E_k^{-1}(C[0] \oplus IV2) \\
-  \Rightarrow Know\ M[1] = E_k^{-1}(C[1] \oplus X)
+  Can\ find\ X = E_k^{-1}(C[0] \oplus IV2) = M[0] \oplus IV1 \\
+  \Rightarrow Know\ M[1] = E_k^{-1}(C[1] \oplus X) \oplus C[0]
 \end{gather*}
 In this situation, we know not only $M[1]$ but all that will be propagated to the next block, so we can decrypt that as well. In fact, we can decrypt all blocks but the first, since that block is essentially the One Time Pad given we don't know IV1.
 
@@ -612,24 +612,22 @@ Since we do not know any of the IVs in this case, we have no clue what the input
 
 \subsection{INC-CPA security of XBC-2}
 
-Let us consider the security of XBC-2, which is claimed to fulfill IND-CPA.
-
-% BLALBA. and also mentions that for encryption of 1-2 blocks, XBC-1 can be used to create a two-man rule. He discusses a few situations where different parts of the secret key (which consists of the cipher key k, IV1, and IV2) are compromised by an adversary. Let us walk through these and other cases.
+Let us consider the security of XBC-2, which is assumed to be IND-CPA. The author suggests that this scheme can too be used to create a two-man rule. Let us again walk through the possible special cases that can occur if some information falls into the hands of an adversary, as is perhaps more likely when there are multiple parties keeping the secrets.
 
 \subsubsection{Both IVs Compromised} \
 
-Given both IV vectors but without the cipher key $k$, we again claim that an adversary cannot recover the plaintext, just like with XBC-1 [III.B.1.]. Since the blockcipher is assumed to be a PRF, whatever comes out of it doesn't help us to decrypt the message. However, just as with XBC-1, we can tell if messages have the same relation with their respective IV1 in the sense that
+Given both IV vectors but without the cipher key $k$, we again claim that an adversary cannot recover the plaintext, just like with XBC-1 [III.B.1.]. Since the blockcipher is assumed to be a PRF, whatever comes out of it doesn't help us to decrypt the message. However, just as with XBC-1, we can tell from the output of the blockcipher if messages have the same relation to their respective IV1 in the sense that
 \begin{gather*}
   M_i[0] \oplus IV1_i == M_{i+1}[0] \oplus IV1_{i+1}
 \end{gather*}
 
-We can exploit the above fact, and break IND-CPA security with the exact same adversary we used in III.B.1, since the output from the first block is the same for XBC-1 and XBC-2. Just as noted there, the only information this exploit gets us is whether or not the plaintexts have the same relation to their respective IV1, as explained in the previous paragraph. With good, unpredictable choices of the IVs, this will rarely be an issue, but it is a potential problem that can occur and thus leak information to an attacker.
+We can exploit the above fact, and break IND-CPA security with the exact same adversary we used in III.B.1, since the output from the first block is the same for XBC-1 and XBC-2. Just as noted there, the only information this exploit gets us is whether or not the plaintexts have the same relation to their respective IV1, as explained in the previous paragraph.
 
 \subsubsection{Cipher key and one IV compromised} \
 
 A two-man rule is an interesting application of this scheme, and one would want to know the security implications if one party would be an adversary; what can he do without the other? \
 
-Anyone with $k$ and IV2 can find both the input and output of the first blockcipher. We can't find $M[0]$ since it is XOR:ed with IV1 which we don't know, but we still know all that will be propagated to the next block, and thus we can decrypt all but the first block, just as for XBC-1 (in III.B.2.). \
+Anyone with $k$ and IV2 can find what both the input and output of the first blockcipher was in the first block of the construction. We can't find $M[0]$ since it is XOR:ed with IV1 which we don't know, but we still know all that will be propagated to the next block, and thus we can decrypt all but the first block, just as for XBC-1 (in III.B.2.). \
 
 Given IV1 and k, we can't decrypt since IV2 is blocking us both from decrypting the first block and finding out what was propagated to the next block. This is the case because we don't know what IV2 is, nor what it was XOR:ed with, so the output is just a random bitstring for us. In other words, it's impossible to decrypt the first block alone, and it should be hard to discover what the plaintexts was for the scheme as a whole. \
 
@@ -658,19 +656,43 @@ Without any knowledge of the IVs, we are helpless since we are essentially given
 
 \subsection{Conclusions of security in special cases}
 
-{\color{red}
-TODO put a nice table here of the schemes and Y/N of whether they are IND-CPA or not... maybe also mention if they are generally weak (see last sentence of III.C.2.). \
-}
+The below table lists whether an adversary can decrypt parts or all of the plaintext given different parts of the secret key. \\
 
-{\color{red}
-TODO write general takeaways... number 1 is that if you reuse IVs, you risk ruining the randomness and making the scheme deterministic, thus leaking message equality and ruining IND-CPA. The difference is especially large when an adversary acquires some inside information such as an IV or $k$. (Makes sense?)\
-}
+\begin{minipage}{6cm} % Footnotes don't work without using minipage
+\begin{tabular}{| l | c c c c | }
+\hline
+  Scheme & Both IVs & One\ IV,\ k & One\ IV & k \\ \hline
+  XBC-1 & N & Y\footnote{This holds only given k and IV2, but not for k and IV1.} & N & N \\
+  XBC-2 & N & Y\footnote{This holds only given k and IV2. Given k and IV1, we may find information
+  about the plaintexts if they are predictable.} & N & N \\
+\hline  
+\end{tabular}
+\end{minipage} \\
+
+Below is the IND-CPA security in these cases. \\
+
+\begin{tabular}{| l | c c c c | }
+\hline
+  Scheme & Both IVs & One\ IV,\ k & One\ IV & k \\ \hline
+  XBC-1 & N & N & Y & Y \\
+  XBC-2 & N & N & Y & Y \\
+\hline  
+\end{tabular} \\
+
+Some general takeaways from considering these cases is that
+
+\begin{enumerate}
+  \item If you reuse IVs, you risk ruining randomness and making the scheme deterministic, thus leaking message equality and ruining IND-CPA. This is especially critical in the case where an adversary acquires inside in the form of an IV.
+  \item {\color{red} TODO other takeaways? Maybe about how to safely use this scheme for a two-man rule? What information should each person have? Or maybe let's just say Insights into what information each party in a two-man rule should possess follow in the Implementation Guidelines section.)}
+\end{enumerate}
 
 \section{Intuition for the proof of ind-cpa security of cross block chaining}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam laoreet turpis ac mauris fringilla, molestie sagittis risus tincidunt. Fusce ullamcorper, metus cursus dictum tempus, lorem odio sagittis lectus, sit amet lobortis leo magna quis odio. Quisque malesuada purus vitae risus accumsan, vel pharetra ligula sollicitudin. Integer felis purus, dapibus in condimentum vel, molestie ultricies dui. Vestibulum quis augue sem. Vivamus ultricies dui est, ac aliquet eros efficitur ut. Pellentesque vel tempor eros. Sed suscipit volutpat enim et semper. In rhoncus hendrerit aliquet. Aliquam condimentum posuere mi, varius porttitor mi suscipit eget. Duis aliquet massa lectus, in facilisis tortor pulvinar quis. Suspendisse cursus lectus dui, ac posuere lorem tempor quis. Vivamus imperdiet bibendum magna. Curabitur in magna vitae ipsum finibus lobortis consectetur non tortor.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam laoreet turpis ac mauris fringilla, molestie sagittis risus tincidunt.
 
-Curabitur sagittis mi eros. Aliquam tempus rutrum erat. Ut sit amet placerat justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum hendrerit ullamcorper orci, ut tincidunt justo sagittis sed. Pellentesque tempus sapien dui, sit amet lobortis risus cursus eget. Duis vestibulum mi nec magna ultrices, vitae viverra mauris vehicula. Nulla tempus eleifend sollicitudin. Cras sollicitudin libero condimentum, mattis turpis non, consequat lorem. Aliquam vitae est sed justo porttitor interdum. Phasellus faucibus, leo sit amet imperdiet tempor, ante tortor hendrerit mauris, a convallis nisl tellus quis turpis. Etiam eget pulvinar eros, nec maximus orci. Nunc placerat felis et quam laoreet venenatis. Donec ut tortor augue. Duis vitae bibendum ante, a egestas nunc.
+Fusce ullamcorper, metus cursus dictum tempus, lorem odio sagittis lectus, sit amet lobortis leo magna quis odio. Quisque malesuada purus vitae risus accumsan, vel pharetra ligula sollicitudin.
+
+Integer felis purus, dapibus in condimentum vel, molestie ultricies dui. Vestibulum quis augue sem. Vivamus ultricies dui est, ac aliquet eros efficitur ut. Pellentesque vel tempor eros. Sed suscipit volutpat enim et semper. In rhoncus hendrerit aliquet.
 
 \section{Implementation guidelines}
 

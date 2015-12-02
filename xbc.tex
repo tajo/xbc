@@ -134,7 +134,7 @@
 % *** GRAPHICS RELATED PACKAGES ***
 %
 \ifCLASSINFOpdf
-  % \usepackage[pdftex]{graphicx}
+\usepackage[pdftex]{graphicx}
   % declare the path(s) where your graphic files are
   % \graphicspath{{../pdf/}{../jpeg/}}
   % and their extensions so you won't have to specify these with
@@ -511,27 +511,30 @@ Section II talks about the fundamentals and design of the XBC mode and its two m
 
 \section{Suggested Algorithms}
 
-XBC can be seen as a variant of CBC\$ where instead of one IV, we make use of two IVs with the aim to provide improved security. This is because the existence of one more IV adds a layer of security and also since there are cross links in between, to decrypt any message, the messages preceding it must be known owing to the construction of the mode. 
+XBC can be seen as a variant of CBC\$ where instead of one IV, we make use of two IVs with the aim to provide improved security. This is because the existence of one more IV adds a layer of security and also since there are cross links in between, to decrypt any message, the messages preceding it must be known owing to the construction of the mode.
 
 \subsection{Algorithm XBC-1}
 
-The construction of this mode can be easily interpreted from the figure. In addition to the IV which we have for CBC\$ we have one more IV which creates a cross linking for the scheme. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the XOR of IV2 and the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round. 
+The construction of this mode can be easily interpreted from the figure \ref{fig_xbc1}. In addition to the IV which we have for CBC\$ we have one more IV which creates a cross linking for the scheme. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the XOR of IV2 and the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round.
 
-\begin{itemize}
-\color{red}
-\item Figure to be added
-\item Algorithm to be added
-\end{itemize}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{xbc1.png}
+\caption{The block diagram of XBC-1 operation.}
+\label{fig_xbc1}
+\end{figure}
 
 \subsection{Algorithm XBC-2}
 
-The construction of this mode is a slight variant of XBC-1. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round similar to XBC-1.
+The construction of this mode is a slight variant of XBC-1. See the figure \ref{fig_xbc2}. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round similar to XBC-1.
 
-\begin{itemize}
-\color{red}
-\item Figure to be added
-\item Algorithm to be added
-\end{itemize}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{xbc2.png}
+\caption{The block diagram of XBC-2 operation.}
+\label{fig_xbc2}
+\end{figure}
+
 
 \section{Security analysis of different modes}
 
@@ -668,7 +671,7 @@ The below table lists whether an adversary can decrypt parts or all of the plain
   XBC-1 & N & Y\footnote{This holds only given k and IV2, but not for k and IV1.} & N & N \\
   XBC-2 & N & Y\footnote{This holds only given k and IV2. Given k and IV1, we may find information
   about the plaintexts if they are predictable.} & N & N \\
-\hline  
+\hline
 \end{tabular}
 \end{minipage} \\
 
@@ -679,7 +682,7 @@ Below is the IND-CPA security in these cases. \\
   Scheme & Both IVs & One\ IV,\ k & One\ IV & k \\ \hline
   XBC-1 & N & N & Y & Y \\
   XBC-2 & N & N & Y & Y \\
-\hline  
+\hline
 \end{tabular} \\
 
 Some general takeaways from considering these cases is that

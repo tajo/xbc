@@ -200,7 +200,8 @@
 
 % *** SPECIALIZED LIST PACKAGES ***
 %
-%\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 % algorithmic.sty was written by Peter Williams and Rogerio Brito.
 % This package provides an algorithmic environment fo describing algorithms.
 % You can use the algorithmic environment in-text or within a figure
@@ -515,7 +516,7 @@ XBC can be seen as a variant of CBC\$ where instead of one IV, we make use of tw
 
 \subsection{Algorithm XBC-1}
 
-The construction of this mode can be easily interpreted from the figure \ref{fig_xbc1}. In addition to the IV which we have for CBC\$ we have one more IV which creates a cross linking for the scheme. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the XOR of IV2 and the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round.
+The construction of this mode can be easily interpreted from the figure \ref{fig_xbc1}. In addition to the IV which we have for CBC\$ we have one more IV which creates a cross linking for the scheme. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the XOR of IV2 and the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round. See the alorithm \ref{alg-xbc1}.
 
 \begin{figure}[!t]
 \centering
@@ -524,9 +525,33 @@ The construction of this mode can be easily interpreted from the figure \ref{fig
 \label{fig_xbc1}
 \end{figure}
 
+\begin{algorithm}
+ \caption{XBC-1}
+ \label{alg-xbc1}
+ \begin{algorithmic}
+ \FOR{blocks $i=0$ to $n$}
+ \STATE $IV_{i+1}^2 = PT_i \oplus IV_{i}^1$
+ \STATE $i = BLOCKCIPHER(K, IV_{i+1}^2)$
+ \STATE $CT_i = IV_{i+1}^1 = i \oplus IV_{i}^2$
+ \ENDFOR
+ \end{algorithmic}
+
+ \noindent\rule{3.5in}{0.4pt}
+
+ \begin{itemize}
+   \item {$\mathbf{K}$}: The key for the underlying block cipher.
+   \item {$\mathbf{IV_0^1}$}: The first provided initialization vector, must have length of the underlying block cipher.
+   \item {$\mathbf{IV_0^2}$}: The second provided initialization vector, must have length of the underlying block cipher.
+   \item {$\mathbf{PT}$}: The plain text, described as block $0$ to $n$.
+   \item {$\mathbf{CT}$}: The cipher text blocks, described as block $0$ to $n$.
+   \item {$\mathbf{IV_n^1}$}: The first initialization vector sent into round $n$.
+   \item {$\mathbf{IV_n^2}$}: The second initialization vector sent into round $n$.
+ \end{itemize}
+\end{algorithm}
+
 \subsection{Algorithm XBC-2}
 
-The construction of this mode is a slight variant of XBC-1. See the figure \ref{fig_xbc2}. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round similar to XBC-1.
+The construction of this mode is a slight variant of XBC-1. See the figure \ref{fig_xbc2} and algorithm \ref{alg-xbc2}. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round similar to XBC-1.
 
 \begin{figure}[!t]
 \centering
@@ -535,6 +560,29 @@ The construction of this mode is a slight variant of XBC-1. See the figure \ref{
 \label{fig_xbc2}
 \end{figure}
 
+\begin{algorithm}
+ \caption{XBC-2}
+ \label{alg-xbc2}
+ \begin{algorithmic}
+ \FOR{blocks $i=0$ to $n$}
+ \STATE $IV_{i+1}^2 = PT_i \oplus IV_{i}^1$
+ \STATE $i = BLOCKCIPHER(K, IV_{i+1}^2)$
+ \STATE $CT_i = IV_{i+1}^1 \oplus IV_{i}^2$
+ \ENDFOR
+ \end{algorithmic}
+
+ \noindent\rule{3.5in}{0.4pt}
+
+ \begin{itemize}
+   \item {$\mathbf{K}$}: The key for the underlying block cipher.
+   \item {$\mathbf{IV_0^1}$}: The first provided initialization vector, must have length of the underlying block cipher.
+   \item {$\mathbf{IV_0^2}$}: The second provided initialization vector, must have length of the underlying block cipher.
+   \item {$\mathbf{PT}$}: The plain text, described as block $0$ to $n$.
+   \item {$\mathbf{CT}$}: The cipher text blocks, described as block $0$ to $n$.
+   \item {$\mathbf{IV_n^1}$}: The first initialization vector sent into round $n$.
+   \item {$\mathbf{IV_n^2}$}: The second initialization vector sent into round $n$.
+ \end{itemize}
+\end{algorithm}
 
 \section{Security analysis of different modes}
 

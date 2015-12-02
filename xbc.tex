@@ -594,13 +594,16 @@ The paper discusses what happens if an adversary recovers one of the IVs and the
 \end{gather*}
 In this situation, we know not only $M[1]$ but all that will be propagated to the next block, so we can decrypt that as well. In fact, we can decrypt all blocks but the first, since that block is essentially the One Time Pad given we don't know IV1.
 
-However, in the case that we only know IV1 and $k$, the output from this algorithm will appear random since
+The author suggests that because of this insecurity, we should not encrypt ``more than 1-2 blocks'' when using the two-man rule in this case, but we would advise to only encrypt one. Encrypting two blocks when one party knows IV2 and $k$ would mean that one member can recover half of every plaintext on his own!
+
+In the case that we know IV1 and $k$
 \begin{itemize}
  \item The output of the first block is XOR:ed with IV2, which we do not know
  \item The second block will seem random to us, since $IV1 \oplus M[0]$, which is unknown, will propagate as IV2 for the second block.
  \item This pattern continues for all blocks, i.e. there will always be information unknown to us that propagates as an IV
 \end{itemize}
-Therefore, only one of the parties in the two-man rule has the power to decrypt all but the first blocks. The author states that one should therefore not encrypt more than 1-2 blocks when using a two-man rule, but we suggest only to encrypt one block in this case. Encrypting two blocks would mean that one member can recover half of every plaintext on his own!
+
+However, if the plaintexts are predictable, i.e. we can identify plaintexts that have a higher-than-average chance to be sent, we can use the formula above for C[0] to see if a pair of common message blocks would match, i.e. if C[0] would be this value given the guesses of M[0] and M[1], given the values we know of k and IV1. This is possible since IV2 is not in the equation for C[1] at all, since we know C[0].
 
 \subsubsection{One IV compromised} \
 
@@ -682,8 +685,10 @@ Below is the IND-CPA security in these cases. \\
 Some general takeaways from considering these cases is that
 
 \begin{enumerate}
-  \item If you reuse IVs, you risk ruining randomness and making the scheme deterministic, thus leaking message equality and ruining IND-CPA. This is especially critical in the case where an adversary acquires inside in the form of an IV.
-  \item {\color{red} TODO other takeaways? Maybe about how to safely use this scheme for a two-man rule? What information should each person have? Or maybe let's just say Insights into what information each party in a two-man rule should possess follow in the Implementation Guidelines section.)}
+  \item If you reuse IVs, you risk ruining randomness and making the scheme deterministic, thus leaking message equality and ruining IND-CPA. This is especially true in the case where an adversary acquires inside information in the form of an IV.
+  \item Never let one party possess both $k$ and IV2
+  \item No situation where one person possesses two of the three secrets is ideal, so the schemes are only secure if encrypting one block, which is impractical and therefore these schemes are not good for creating a two-man rule
+  \item Security of possible distributions of the three secrets among two persons will be analyzed under the Implementation Guidelines section
 \end{enumerate}
 
 \section{Intuition for the proof of ind-cpa security of cross block chaining}
@@ -699,10 +704,10 @@ Integer felis purus, dapibus in condimentum vel, molestie ultricies dui. Vestibu
 {\color{red}
 TODO: Let’s write about how the scheme should be used practically!
 \begin{itemize}
-  \item How should we use IV vectors?
+  \item How should we use IV vectors? (remember to consider generators vs occasionally agreeing on new vectors using this very scheme)
   \item Do we need to change both every time?
   \item Can we use the same k all the time?
-  \item Can we use public-key crypto to distribute the IV vectors and then switch to symmetric-key crypto?!!!!!
+  \item Can we use public-key crypto to distribute the IV vectors and then switch to symmetric-key crypto?
 \end{itemize}
 We can motivate these things with references to the security analysis!
 }

@@ -696,6 +696,7 @@ However, the IND-CPA game is very easy to win: if we are the one providing the p
 This would indicate that when an adversary is given the IV1 vector and $k$, security is weak if the plaintexts are predictable. If we have a limited number of guesses for the values of the first two blocks, we can verify whether or not $C[1]$ is possible with these values given what we know about $k$ and IV1. This means that an attacker given $k$, the IV1 vector and a ciphertext can have some sense of how likely it is that the ciphertext is the encryption some probable plaintext as compared to some other probable plaintext, which is very serious.
 
 \subsubsection{One IV compromised} \
+\label{xbc2-one_iv}
 
 Given IV1, we can't tell anything from the ciphertext since the blockcipher is a PRF. Even in the IND-CPA game, where we decide (and thus know) the plaintexts, we can't tell anything since we can't decrypt with respect to the blockcipher, nor can we tell anything about the equality of messages assumed that IV2 changes between encryptions. However, if IV2 is fixed, i.e. reused every time, we can send messages in IND-CPA such that we can tell if the input to the blockcipher was equal, and thus break IND-CPA. But the scheme is IND-CPA in this case if IV2 changes, as it should. \
 
@@ -749,21 +750,21 @@ Integer felis purus, dapibus in condimentum vel, molestie ultricies dui. Vestibu
 
 \section{Implementation guidelines}
 
-Let us cover some topics one should be aware of when using this scheme in practice.
+% {\color{red}
+% TODO: Let’s write about how the scheme should be used practically!
+% \begin{itemize}
+%   \item How should we use IV vectors? (remember to consider generators vs occasionally agreeing on new vectors using this very scheme)
+%   \item Do we need to change both every time?
+%   \item Can we use the same k all the time?
+% \end{itemize}
+% We can motivate these things with references to the security analysis!
+% }
 
-\subsection{Use of IVs}
-Blaha
+Let us consider what one should be aware of when using this scheme in practice. One problem with this scheme is that we need a new IV1 and IV2 for each round. If we imagine using hybrid encryption to synchronize the blockcipher key and initial IV vectors. When we start running out of IVs, we can encrypt new vectors and send them using this very encryption scheme. Note that whatever the number of blocks in the message, we just need one of each IV to encrypt it. Thus we can encrypt very large vectors of new IVs. However, we'd rather not have to send large things over the network if we can avoid it. A more elegant solution would be to use PRGs, or Pseudo-Random Generators. In that case, we'd use the assymetric part of the hybrid encryption scheme to agree on the key of the blockcipher key and an initial seed for each generator, which is to be used with the PRGs.
 
-{\color{red}
-TODO: Let’s write about how the scheme should be used practically!
-\begin{itemize}
-  \item How should we use IV vectors? (remember to consider generators vs occasionally agreeing on new vectors using this very scheme)
-  \item Do we need to change both every time?
-  \item Can we use the same k all the time?
-  \item Can we use public-key crypto to distribute the IV vectors and then switch to symmetric-key crypto?
-\end{itemize}
-We can motivate these things with references to the security analysis!
-}
+But do we need to change both IVs every time? Well, we saw in \ref{xbc2-one_iv} that randomness is necessary to achieve the highest security this scheme can offer. It is therefore strongly advised to always use good random IVs.
+
+However, in these experiments I have assumed that we keep using the same blockcipher key forever, and the security is still good. Therefore one does not need to worry about changing it.
 
 % conference papers do not normally have an appendix
 

@@ -594,6 +594,7 @@ For distinct n-bit strings $M_0$, $M_1$:
 \begin{gather*}
   C \leftarrow LR_k (M_0, M_1) \\
   M \leftarrow D_k (C || 0^n) \\
+  If\ M[0] == M_0\ return\ 0\ otherwise\ 1
 \end{gather*}
 
 The first block of M will be exactly what was encrypted by the encryption oracle, so we can simply compare that block with $M_0$ and $M_1$ and know which experiment we are in. The above attack will work every time.
@@ -604,11 +605,7 @@ The first block of M will be exactly what was encrypted by the encryption oracle
   t:\ compare,\ concat\ two\ n-bit\ strings \\
 \end{gather*}
 
-This attack can be easily prevented by using this scheme and some good MAC scheme in MAC-then-encrypt.
-
-{\color{red}
-TODO maybe show that it will be IND-CCA in MAC-then-encrypt w/ some good, or perhaps do this under Implementation Guidelines.
-}
+Assumed that theses schemes are IND-CPA secure, one can achieve IND-CCA security easily by using MAC-then-encrypt with some good MAC.
 
 \subsection{INC-CPA security of XBC-1}
 

@@ -421,11 +421,11 @@ cross block chaining; XBC; IND-CPA; IND-CCA; security analysis
 \section{Introduction}
 % no \IEEEPARstart
 
-Since a block cipher by itself is suitable only for encryption or decryption of one length-fixed block of bits, there is a need to introduce an algorithm, a mode of operation, that uses the block cipher as a underlying building block and enables us to encrypt or decrypt a message of variable length. There are many modes in a widespread use: Electronic Codebook (EBC), Cipher Block Chaining (CBC), Cipher Feedback (CFB), Output Feedback (OFB) or Counter (CTR).
+Since a block cipher by itself is suitable only for encryption or decryption of one length-fixed block of bits, there is a need to introduce an algorithm, a mode of operation, that uses the block cipher as an underlying building block and enables us to encrypt or decrypt a message of variable length. There are many modes in a widespread use: Electronic Codebook (EBC), Cipher Block Chaining (CBC), Cipher Feedback (CFB), Output Feedback (OFB) or Counter (CTR).
 
 In May 2014, Andre Watson submitted a proposal for a new block cipher mode of operation called Cross Block Chaining (XBC). This proposal was published by National Institute of Standards and Technology (NIST) under the proposed modes section. However, no formal proof considering security has been made.
 
-Section II talks about the fundamentals and design of the XBC mode and its two main variants. Section III describes security analysis and provides various attacks that can be used against the XBC scheme. Section IV is implementation guidelines. The last part is conclusion.
+Section II talks about the fundamentals and design of the XBC mode and its two main variants. Section III describes security analysis and provides various attacks that can be used against the XBC scheme. Section IV is implementation guidelines. The last part is the conclusion.
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -516,7 +516,7 @@ XBC can be seen as a variant of CBC\$ where instead of one IV, we make use of tw
 
 \subsection{Algorithm XBC-1}
 
-The construction of this mode can be easily interpreted from the figure \ref{fig_xbc1}. In addition to the IV which we have for CBC\$ we have one more IV which creates a cross linking for the scheme. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the XOR of IV2 and the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round. See the alorithm \ref{alg-xbc1}.
+The construction of this mode can be easily interpreted from the figure \ref{fig_xbc1}. In addition, to the IV which we have for CBC\$, we have one more IV which creates a cross linking for the scheme. The initial IV1 and IV2 are provided in the first round. The IV1 for each subsequent round of block cipher is obtained from the XOR of IV2 and the output of block cipher of the previous round. Similarly, the IV2 for each subsequent round of block cipher is obtained from the XOR of IV1 and the plaintext of the previous round. See the algorithm \ref{alg-xbc1}.
 
 \begin{figure}[!t]
 \centering
@@ -540,10 +540,10 @@ The construction of this mode can be easily interpreted from the figure \ref{fig
 
  \begin{itemize}
    \item {$\mathbf{K}$}: The key for the underlying block cipher.
-   \item {$\mathbf{IV_0^1}$}: The first provided initialization vector, must have length of the underlying block cipher.
-   \item {$\mathbf{IV_0^2}$}: The second provided initialization vector, must have length of the underlying block cipher.
+   \item {$\mathbf{IV_0^1}$}: The first provided initialization vector, must have the length of the underlying block cipher.
+   \item {$\mathbf{IV_0^2}$}: The second provided initialization vector, must have the length of the underlying block cipher.
    \item {$\mathbf{PT}$}: The plain text, described as block $0$ to $n$.
-   \item {$\mathbf{CT}$}: The cipher text blocks, described as block $0$ to $n$.
+   \item {$\mathbf{CT}$}: The cipher text blocks described as block $0$ to $n$.
    \item {$\mathbf{IV_n^1}$}: The first initialization vector sent into round $n$.
    \item {$\mathbf{IV_n^2}$}: The second initialization vector sent into round $n$.
  \end{itemize}
@@ -575,10 +575,10 @@ The construction of this mode is a slight variant of XBC-1. See the figure \ref{
 
  \begin{itemize}
    \item {$\mathbf{K}$}: The key for the underlying block cipher.
-   \item {$\mathbf{IV_0^1}$}: The first provided initialization vector, must have length of the underlying block cipher.
-   \item {$\mathbf{IV_0^2}$}: The second provided initialization vector, must have length of the underlying block cipher.
+   \item {$\mathbf{IV_0^1}$}: The first provided initialization vector, must have the length of the underlying block cipher.
+   \item {$\mathbf{IV_0^2}$}: The second provided initialization vector, must have the length of the underlying block cipher.
    \item {$\mathbf{PT}$}: The plain text, described as block $0$ to $n$.
-   \item {$\mathbf{CT}$}: The cipher text blocks, described as block $0$ to $n$.
+   \item {$\mathbf{CT}$}: The cipher text blocks described as block $0$ to $n$.
    \item {$\mathbf{IV_n^1}$}: The first initialization vector sent into round $n$.
    \item {$\mathbf{IV_n^2}$}: The second initialization vector sent into round $n$.
  \end{itemize}
@@ -614,7 +614,7 @@ While the author doesn't state what the security of the scheme is  - we assume I
 \subsubsection{Both IVs Compromised} \
 \label{xbc1-both_IVs}
 
-If an adversary acquires both the IV vectors, but not the cipher key $k$, we claim that the plaintext can still not be recovered since the blockcipher chosen will be a PRF, thus producing seemingly random output. However, the scheme is not IND-CPA secure under these circumstances, since we can let the messages be such that we can distinguish equality of the first blocks.
+If an adversary acquires both the IV vectors, but not the cipher key $k$, we claim that the plaintext can still not be recovered since the blockcipher chosen will be a PRF, thus producing seemingly random output. However, the scheme is not IND-CPA secure under these circumstances since we can let the messages be such that we can distinguish equality of the first blocks.
 
 Let $i$ be the current index in the IV vectors. We can then look up the next IV1, IV2 in the vectors, and do the following attack:
 \begin{gather*}
@@ -644,7 +644,7 @@ The paper discusses what happens if an adversary recovers one of the IVs and the
 \end{gather*}
 In this situation, we know not only $M[1]$ but all that will be propagated to the next block, so we can decrypt that as well. In fact, we can decrypt all blocks but the first, since that block is essentially the One Time Pad given we don't know IV1.
 
-The author suggests that because of this insecurity, we should not encrypt ``more than 1-2 blocks'' when using the two-man rule in this case, but we would advise to only encrypt one. Encrypting two blocks when one party knows IV2 and $k$ would mean that one member can recover half of every plaintext on his own!
+The author suggests that because of this insecurity, we should not encrypt ``more than 1-2 blocks'' when using the two-man rule, in this case, but we would advise to only encrypt one. Encrypting two blocks when one party knows IV2 and $k$ would mean that one member can recover half of every plaintext on his own!
 
 In the case that we know IV1 and $k$
 \begin{itemize}
@@ -655,11 +655,11 @@ In the case that we know IV1 and $k$
 
 However, if the plaintexts are predictable, i.e. we can identify plaintexts that have a high chance to be sent, we might be able to use the formula above for C[1] to gain information about the message. If we insert guesses for M[0] and M[1] into the formula, and use the values of $k$ and IV1 that we know, we can compare the result with C[1]. If they are equal, there is a good chance that the guesses are indeed the message blocks sent.
 
-If our guess was correct, we know all the points that will propagate forward from the second block - the upper point being M[1] XOR C[0] - and can therefore decrypt all the following messages!
+If our guess was correct, we know all the points that will propagate forward from the second block - the upper point being M[1] XOR C[0] - and can, therefore, decrypt all the following messages!
 
 \subsubsection{One IV compromised} \
 
-Since we do not know the other IV, the ciphertext will appear random to us just like output from the One Time Pad. Thus no information is leaked as long as we do not know the cipher key $k$. The scheme remains secure and the plaintexts uncompromised by any attacker with reasonable resources.
+Since we do not know the other IV, the ciphertext will appear random to us just like the output from the One Time Pad. Thus, no information is leaked as long as we do not know the cipher key $k$. The scheme remains secure and the plaintexts uncompromised by any attacker with reasonable resources.
 
 \subsubsection{Cipher key $k$ compromised} \
 
@@ -682,7 +682,7 @@ We can exploit the above fact, and break IND-CPA security with the exact same ad
 
 A two-man rule is an interesting application of this scheme, and one would want to know the security implications if one party would be an adversary; what can he do without the other? \
 
-Anyone with $k$ and IV2 can find what both the input and output of the first blockcipher was in the first block of the construction. We can't find $M[0]$ since it is XORed with IV1 which we don't know, but we still know all that will be propagated to the next block, and thus we can decrypt all but the first block, just as for XBC-1 (in \ref{xbc1-k_oneIV}). \
+Anyone with $k$ and IV2 can find what both the input and the output of the first blockcipher was in the first block of the construction. We can't find $M[0]$ since it is XORed with IV1 which we don't know, but we still know all that will be propagated to the next block, and thus we can decrypt all but the first block, just as for XBC-1 (in \ref{xbc1-k_oneIV}). \
 
 Given IV1 and k, we can't decrypt since IV2 is blocking us both from decrypting the first block and finding out what was propagated to the next block. This is the case because we don't know what IV2 is, nor what it was XORed with, so the output is just a random bitstring for us. In other words, it's impossible to decrypt the first block alone. \
 
@@ -735,12 +735,12 @@ Below is the IND-CPA security in these cases. \\
 \hline
 \end{tabular} \\
 
-Some general takeaways from considering these cases is that
+Some general takeaways from considering these cases are that
 
 \begin{enumerate}
   \item If you reuse IVs, you risk ruining randomness and making the scheme deterministic, thus leaking message equality and ruining IND-CPA. This is especially true in the case where an adversary acquires inside information in the form of an IV.
   \item Never let one party possess both $k$ and IV2.
-  \item No situation where one person possesses two of the three secrets is ideal, so the schemes are only secure if encrypting one block, which is impractical and therefore these schemes are not good for creating a two-man rule. There are better ways how to enforce two-man rule as Shamir's secret sharing using Lagrange interpolation. \cite{shamir}
+  \item No situation where one person possesses two of the three secrets are ideal, so the schemes are only secure if encrypting one block, which is impractical and therefore these schemes are not good for creating a two-man rule. There are better ways how to enforce two-man rule as Shamir's secret sharing using Lagrange interpolation. \cite{shamir}
   \item Security of possible distributions of the three secrets among two persons will be analyzed under the Implementation Guidelines section.
 \end{enumerate}
 
@@ -756,7 +756,7 @@ Some general takeaways from considering these cases is that
 % We can motivate these things with references to the security analysis!
 % }
 
-Let us consider what one should be aware of when using this scheme in practice. One problem with this scheme is that we need a new IV1 and IV2 for each round. If we imagine using hybrid encryption to synchronize the blockcipher key and initial IV vectors. When we start running out of IVs, we can encrypt new vectors and send them using this very encryption scheme. Note that whatever the number of blocks in the message, we just need one of each IV to encrypt it. Thus we can encrypt very large vectors of new IVs. However, we'd rather not have to send large things over the network if we can avoid it. A more elegant solution would be to use PRGs, or Pseudo-Random Generators. In that case, we'd use the assymetric part of the hybrid encryption scheme to agree on the key of the blockcipher key and an initial seed for each generator, which is to be used with the PRGs.
+Let us consider what one should be aware of when using this scheme in practice. One problem with this scheme is that we need a new IV1 and IV2 for each round. If we imagine using hybrid encryption to synchronize the blockcipher key and initial IV vectors. When we start running out of IVs, we can encrypt new vectors and send them using this very encryption scheme. Note that whatever the number of blocks in the message, we just need one of each IV to encrypt it. Thus we can encrypt very large vectors of new IVs. However, we'd rather not have to send large things over the network if we can avoid it. A more elegant solution would be to use PRGs, or Pseudo-Random Generators. In that case, we'd use the asymmetric part of the hybrid encryption scheme to agree on the key of the blockcipher key and an initial seed for each generator, which is to be used with the PRGs.
 
 But do we need to change both IVs every time? Well, we saw in \ref{xbc2-one_iv} that randomness is necessary to achieve the highest security this scheme can offer. It is therefore strongly advised to always use good random IVs.
 

@@ -398,7 +398,7 @@ Email: gustav@gatech.edu}
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
-Cross Block Chaining (XBC) is a mode of operation for a block cipher. It resembles one of the most used modes - Cipher Block Chaining (CBC). However, it operates using two IVs instead of one, which introduces new capabilities but also raises security concerns. Our work focuses on a detailed security analysis of the Cross Block Chaining mode. We show a proof for XBC being IND-CCA insecure. We also discuss importance of initialization vector selection and its consequences on the scheme security.
+Cross Block Chaining (XBC) \cite{watson} is a mode of operation for a block cipher. It resembles one of the most used modes - Cipher Block Chaining (CBC). However, it operates using two IVs instead of one, which introduces new capabilities but also raises security concerns. Our work focuses on a detailed security analysis of the Cross Block Chaining mode. We show a proof for XBC being IND-CCA insecure. We also discuss importance of initialization vector selection and its consequences on the scheme security.
 \end{abstract}
 
 % As a general rule, do not put math, special symbols or citations
@@ -739,9 +739,9 @@ Some general takeaways from considering these cases is that
 
 \begin{enumerate}
   \item If you reuse IVs, you risk ruining randomness and making the scheme deterministic, thus leaking message equality and ruining IND-CPA. This is especially true in the case where an adversary acquires inside information in the form of an IV.
-  \item Never let one party possess both $k$ and IV2
-  \item No situation where one person possesses two of the three secrets is ideal, so the schemes are only secure if encrypting one block, which is impractical and therefore these schemes are not good for creating a two-man rule
-  \item Security of possible distributions of the three secrets among two persons will be analyzed under the Implementation Guidelines section
+  \item Never let one party possess both $k$ and IV2.
+  \item No situation where one person possesses two of the three secrets is ideal, so the schemes are only secure if encrypting one block, which is impractical and therefore these schemes are not good for creating a two-man rule. There are better ways how to enforce two-man rule as Shamir's secret sharing using Lagrange interpolation. \cite{shamir}
+  \item Security of possible distributions of the three secrets among two persons will be analyzed under the Implementation Guidelines section.
 \end{enumerate}
 
 \section{Implementation guidelines}
@@ -802,6 +802,9 @@ We would like to show our gratitude to Dr. Alexandra Boldyreva, Georgia Tech for
 \bibitem{watson}
 Andre Watson, \emph{Cross Block Chaining (XBC)}.\hskip 1em plus
   0.5em minus 0.4em\relax May, 2014.
+
+\bibitem{shamir}
+Adi Shamir. 1979. How to share a secret. Commun. ACM 22, 11 (November 1979), 612-613. DOI=http://dx.doi.org/10.1145/359168.359176
 
 \end{thebibliography}
 
